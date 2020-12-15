@@ -4,8 +4,7 @@ namespace NewsFeed.Classes
 {
     public class NewsFeedConfiguration
     {
-        public List<string> Feeds{ get; set; }
+        public List<RequestConfiguration> RequestConfigurations{ get; set; }
         public string Api { get; set; }
     }
-
 }

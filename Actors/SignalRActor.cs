@@ -1,26 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Util.Internal;
 using NewsFeed.Classes;
+using NewsFeed.Messages;
 
 namespace NewsFeed.Actors
 {
     public class SignalRActor : ReceiveActor, IWithUnboundedStash
     {
-        public class SetHub
-        {
-            public NewsFeedServiceHelper Hub { get; }
-
-            public SetHub(NewsFeedServiceHelper hub)
-            {
-                Hub = hub;
-            }
-        }
-
         private NewsFeedServiceHelper _hub;
-        private Dictionary<NewsFeed, IActorRef> _feedActorCache;
+        private readonly Dictionary<string, IActorRef> _feedActorCache;
+        public IStash Stash { get; set; }
 
         public SignalRActor()
         {
+            _feedActorCache = new Dictionary<string, IActorRef>();
             WaitingForHub();
         }
 
@@ -36,19 +31,21 @@ namespace NewsFeed.Actors
             ReceiveAny(_ => Stash.Stash());
         }
 
-        public IStash Stash { get; set; }
 
         private void HubAvailable()
         {
-            Receive<Dictionary<NewsFeed, IActorRef>>(feedActorCache =>
+            Receive<SendNewsServiceActor>(send =>
             {
-                _feedActorCache ??= feedActorCache;
-            });
-            Receive<NewsServiceActor.FetchNews>(fetch =>
-            {
-                if (_feedActorCache.TryGetValue(fetch.NewsFeed, out var actor))
+                if (!_feedActorCache.ContainsKey(send.Actor.Path.Name))
                 {
-                    actor.Tell(new NewsServiceActor.FetchNews(fetch.NewsFeed));
+                    _feedActorCache.Add(send.Actor.Path.Name, send.Actor);
+                }
+            });
+            Receive<FetchNews>(fetch =>
+            {
+                foreach (var kvp in _feedActorCache)
+                {
+                    kvp.Value.Tell(new FetchNews());
                 }
             });
         }

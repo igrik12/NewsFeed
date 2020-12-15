@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
+using NewsAPI.Constants;
 using NewsFeed.Actors;
+using NewsFeed.Messages;
 
 namespace NewsFeed.Classes
 {
@@ -24,8 +26,8 @@ namespace NewsFeed.Classes
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _akkaStartupTasks.StartAkka();
-            SystemActors.SignalRActor.Tell(new SignalRActor.SetHub(this));
-            _configuration.Feeds.ForEach(feed => SystemActors.NewsFeedOrchestratorActor.Tell(new NewsFeedServiceOrchestrator.CreateService(Enum.Parse<Actors.NewsFeed>(feed))));
+            SystemActors.SignalRActor.Tell(new SetHub(this));
+            _configuration.RequestConfigurations.ForEach(config => SystemActors.NewsFeedOrchestratorActor.Tell(new CreateService(CreateRequest(config))));
             return Task.CompletedTask;
         }
 
@@ -33,6 +35,21 @@ namespace NewsFeed.Classes
         {
             return Task.CompletedTask;
         }
-    }
 
+        private Request CreateRequest(RequestConfiguration configuration)
+        {
+            return configuration.Q switch
+            {
+                "Apple" => new AppleRequestFactory(configuration).CreateRequest(),
+                "Google" => new GoogleRequestFactory(configuration).CreateRequest(),
+                _ => new GoogleRequestFactory(new RequestConfiguration()
+                {
+                    Q = "Google",
+                    Language = Languages.EN,
+                    SortBy = SortBys.Popularity,
+                    From = DateTime.Today
+                }).CreateRequest()
+            };
+        }
+    }
 }

@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using NewsAPI;
+using NewsAPI.Constants;
 using NewsFeed.Actors;
 using NewsFeed.Classes;
 
@@ -34,16 +36,23 @@ namespace NewsFeed
             {
                 configuration.RootPath = "ClientApp/build";
             });
-            services.AddHttpClient<INewsService, NewsServiceArchive>(o =>
-                          o.BaseAddress = new Uri(Configuration["HackerNewsConfig:BaseUrl"]));
             services.AddSignalR();
-            services.AddSingleton(new NewsFeedConfiguration()
+            var config = new NewsFeedConfiguration()
             {
-                Feeds = Configuration.GetSection("feeds").Get<string[]>().ToList(),
+                RequestConfigurations = Configuration.GetSection("feeds").Get<RequestConfiguration[]>().ToList(),
                 Api = Configuration.GetValue<string>("apikey")
-            });
+            };
+            services.AddSingleton(config);
+            services.AddSingleton(new NewsApiClient(config.Api));
             services.AddSingleton<AkkaStartupTasks>();
             services.AddSingleton<NewsFeedServiceHelper, NewsFeedServiceHelper>();
+        }
+
+        public class TempConfig
+        {
+            public string Q { get; set; }
+            public Languages Language { get; set; }
+            public SortBys SortBy { get; set; }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

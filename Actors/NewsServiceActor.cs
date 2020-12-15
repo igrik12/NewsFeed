@@ -1,58 +1,37 @@
-﻿using Akka.Actor;
-using System.Net.Http;
-using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System;
+using Akka.Actor;
 using NewsAPI;
-using NewsAPI.Constants;
 using NewsAPI.Models;
-using NewsFeed.Classes;
+using NewsFeed.Messages;
 
 namespace NewsFeed.Actors
 {
-    public class NewsServiceActor : ReceiveActor
+    public class NewsServiceActor<T> : ReceiveActor where T : IRequest
     {
-        public class FetchNews
-        {
-            public NewsFeed NewsFeed { get; }
-
-            public FetchNews(NewsFeed newsFeed)
-            {
-                NewsFeed = newsFeed;
-            }
-        }
-        private readonly HttpClient _httpClient;
         private readonly IActorRef _responseProcessActor;
-        private readonly NewsFeed _newsFeed;
+        private readonly NewsApiClient _client;
+        private EverythingRequest _everythingRequest;
 
-        public NewsServiceActor(HttpClient httpClient, IActorRef responseProcessActor, NewsFeed newsFeed)
+        public NewsServiceActor(NewsApiClient client)
         {
-            _httpClient = httpClient;
-            _responseProcessActor = responseProcessActor;
-            _newsFeed = newsFeed;
+            _responseProcessActor = Context.ActorOf<ResponseProcessActor>();
+            _client = client;
             Service();
         }
 
-        public NewsServiceActor()
-        {
-            Service();
-        }
 
         private void Service()
         {
-            Receive<FetchNews>((fetch =>
+            Receive<T>((msg =>
             {
-                var newsApiClient = new NewsApiClient("9a610f9cfb9544e78333ae6ec536d17b");
-
-                var articlesResponse = newsApiClient.GetEverything(new EverythingRequest
-                {
-                    Q = fetch.NewsFeed.ToString(),
-                    SortBy = SortBys.Popularity,
-                    Language = Languages.EN,
-                    From = new DateTime(2020, 11, 15),
-                });
-                Console.WriteLine(articlesResponse);
+                _everythingRequest = msg.EverythingRequest;
             }));
+
+            Receive<FetchNews>(fetch =>
+            {
+                Console.WriteLine(fetch);
+                _client.GetEverythingAsync(_everythingRequest).PipeTo(_responseProcessActor);
+            });
         }
     }
 }

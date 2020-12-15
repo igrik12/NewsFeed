@@ -16,7 +16,7 @@ namespace NewsFeed.Actors
 
         private void Process()
         {
-            Receive<List<Article>>(response =>
+            Receive<ArticlesResult>(response =>
             {
                 Console.WriteLine(response);
             });
