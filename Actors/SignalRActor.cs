@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 using Akka.Util.Internal;
+using Microsoft.AspNetCore.SignalR;
+using NewsAPI.Models;
 using NewsFeed.Classes;
 using NewsFeed.Messages;
 
@@ -48,6 +51,8 @@ namespace NewsFeed.Actors
                     kvp.Value.Tell(new FetchNews());
                 }
             });
+
+            Receive<NewsResult>((result) => _hub.NewsHub.Clients.All.SendAsync("ArticlesResult", result));
         }
 
     }

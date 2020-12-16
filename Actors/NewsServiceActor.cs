@@ -1,7 +1,7 @@
-﻿using System;
-using Akka.Actor;
+﻿using Akka.Actor;
 using NewsAPI;
 using NewsAPI.Models;
+using NewsFeed.Classes;
 using NewsFeed.Messages;
 
 namespace NewsFeed.Actors
@@ -14,11 +14,10 @@ namespace NewsFeed.Actors
 
         public NewsServiceActor(NewsApiClient client)
         {
-            _responseProcessActor = Context.ActorOf<ResponseProcessActor>();
+            _responseProcessActor = Context.ActorOf(Props.Create(() => new ResponseProcessActor(Self)));
             _client = client;
             Service();
         }
-
 
         private void Service()
         {
@@ -29,8 +28,7 @@ namespace NewsFeed.Actors
 
             Receive<FetchNews>(fetch =>
             {
-                Console.WriteLine(fetch);
-                _client.GetEverythingAsync(_everythingRequest).PipeTo(_responseProcessActor);
+                _client.GetEverythingAsync(_everythingRequest).ContinueWith<NewsResult>((res) => new NewsResult(_everythingRequest.Q, res.Result)).PipeTo(_responseProcessActor);
             });
         }
     }

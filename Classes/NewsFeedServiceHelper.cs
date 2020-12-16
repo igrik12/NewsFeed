@@ -6,19 +6,20 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using NewsAPI.Constants;
 using NewsFeed.Actors;
+using NewsFeed.Factories;
 using NewsFeed.Messages;
 
 namespace NewsFeed.Classes
 {
     public class NewsFeedServiceHelper : IHostedService
     {
-        private readonly IHubContext<NewsHub> _hub;
+        public readonly IHubContext<NewsHub> NewsHub;
         private readonly AkkaStartupTasks _akkaStartupTasks;
         private readonly NewsFeedConfiguration _configuration;
 
-        public NewsFeedServiceHelper(IHubContext<NewsHub> hub, AkkaStartupTasks akkaStartupTasks, NewsFeedConfiguration configuration)
+        public NewsFeedServiceHelper(IHubContext<NewsHub> newsHub, AkkaStartupTasks akkaStartupTasks, NewsFeedConfiguration configuration)
         {
-            _hub = hub;
+            NewsHub = newsHub;
             _akkaStartupTasks = akkaStartupTasks;
             _configuration = configuration;
         }

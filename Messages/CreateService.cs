@@ -1,4 +1,5 @@
 ﻿using NewsFeed.Actors;
+using NewsFeed.Classes;
 
 namespace NewsFeed.Messages
 {

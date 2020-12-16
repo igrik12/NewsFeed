@@ -23,9 +23,15 @@ namespace NewsFeed.Actors
             {
                 var requestType = service.Request.GetType();
                 var actor = Context.ActorOf(Props.Create(() => (ReceiveActor)Activator.CreateInstance(typeof(NewsServiceActor<>).MakeGenericType(requestType), _client)), service.Request.EverythingRequest.Q);
-                actor.Tell(service.Request);
-                _signalRActor.Tell(new SendNewsServiceActor(actor), Self);
+                actor?.Tell(service.Request);
+                _signalRActor?.Tell(new SendNewsServiceActor(actor), Self);
             });
+        }
+
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(3,
+                TimeSpan.FromSeconds(5), exception => Directive.Restart);
         }
     }
 

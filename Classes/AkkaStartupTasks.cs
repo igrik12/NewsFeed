@@ -18,7 +18,7 @@ namespace NewsFeed.Classes
         public ActorSystem StartAkka()
         {
             SystemActors.ActorSystem = ActorSystem.Create("NewsFeedSystem");
-            var signalRActor = SystemActors.SignalRActor = SystemActors.ActorSystem.ActorOf(Props.Create(() => new SignalRActor()), "signalr");
+            var signalRActor = SystemActors.SignalRActor = SystemActors.ActorSystem.ActorOf(Props.Create(() => new SignalRActor()), "signalRActor");
             SystemActors.NewsFeedOrchestratorActor = SystemActors.ActorSystem.ActorOf(Props.Create(() => new NewsFeedServiceOrchestrator(signalRActor, _client)));
             return SystemActors.ActorSystem;
         }

@@ -1,17 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NewsAPI;
-using NewsAPI.Constants;
-using NewsFeed.Actors;
 using NewsFeed.Classes;
 
 namespace NewsFeed
@@ -46,13 +41,6 @@ namespace NewsFeed
             services.AddSingleton(new NewsApiClient(config.Api));
             services.AddSingleton<AkkaStartupTasks>();
             services.AddSingleton<NewsFeedServiceHelper, NewsFeedServiceHelper>();
-        }
-
-        public class TempConfig
-        {
-            public string Q { get; set; }
-            public Languages Language { get; set; }
-            public SortBys SortBy { get; set; }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
