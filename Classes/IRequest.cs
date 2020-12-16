@@ -4,22 +4,16 @@ namespace NewsFeed.Classes
 {
     public interface IRequest
     {
-        EverythingRequest EverythingRequest { get; }
+        TopHeadlinesRequest TopHeadlinesRequest { get; }
     }
 
     public abstract class Request : IRequest
     {
-        public EverythingRequest EverythingRequest { get; }
+        public TopHeadlinesRequest TopHeadlinesRequest { get; }
 
-        protected Request(EverythingRequest everythingRequest)
+        protected Request(TopHeadlinesRequest topHeadlinesRequest)
         {
-            EverythingRequest = everythingRequest;
+            TopHeadlinesRequest = topHeadlinesRequest;
         }
-    }
-
-    public enum RequestType
-    {
-        EverythingRequest,
-        TopHeadlinesRequest
     }
 }

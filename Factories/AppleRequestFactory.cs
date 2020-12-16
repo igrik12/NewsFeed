@@ -1,4 +1,5 @@
-﻿using NewsAPI.Models;
+﻿using NewsAPI.Constants;
+using NewsAPI.Models;
 using NewsFeed.Actors;
 using NewsFeed.Classes;
 
@@ -15,12 +16,12 @@ namespace NewsFeed.Factories
 
         public override Request CreateRequest()
         {
-            return new AppleRequest(new EverythingRequest()
+            return new AppleRequest(new TopHeadlinesRequest()
             {
                 Q = _configuration.Q,
-                SortBy = _configuration.SortBy,
+                Category = _configuration.Category,
                 Language = _configuration.Language,
-                From = _configuration.From
+                Country = _configuration.Country,
             });
         }
     }

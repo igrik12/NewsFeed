@@ -4,6 +4,7 @@ using System.Linq;
 using Akka.Actor;
 using Akka.Util.Internal;
 using Microsoft.AspNetCore.SignalR;
+using NewsAPI;
 using NewsAPI.Models;
 using NewsFeed.Classes;
 using NewsFeed.Messages;
@@ -46,6 +47,8 @@ namespace NewsFeed.Actors
             });
             Receive<FetchNews>(fetch =>
             {
+                var actor = Context.ActorOf(Props.Create(() => new NewsServiceActor<AppleRequest>(new NewsApiClient(""))));
+                actor.Tell("do stuff");
                 foreach (var kvp in _feedActorCache)
                 {
                     kvp.Value.Tell(new FetchNews());

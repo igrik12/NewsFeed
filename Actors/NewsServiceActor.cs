@@ -10,7 +10,7 @@ namespace NewsFeed.Actors
     {
         private readonly IActorRef _responseProcessActor;
         private readonly NewsApiClient _client;
-        private EverythingRequest _everythingRequest;
+        private TopHeadlinesRequest _everythingRequest;
 
         public NewsServiceActor(NewsApiClient client)
         {
@@ -23,12 +23,13 @@ namespace NewsFeed.Actors
         {
             Receive<T>((msg =>
             {
-                _everythingRequest = msg.EverythingRequest;
+                _everythingRequest = msg.TopHeadlinesRequest;
             }));
 
             Receive<FetchNews>(fetch =>
             {
-                _client.GetEverythingAsync(_everythingRequest).ContinueWith<NewsResult>((res) => new NewsResult(_everythingRequest.Q, res.Result)).PipeTo(_responseProcessActor);
+                _client.GetTopHeadlinesAsync(_everythingRequest).ContinueWith((res) => new NewsResult(_everythingRequest.Q, res.Result)).PipeTo(_responseProcessActor);
+                Self.Tell(PoisonPill.Instance);
             });
         }
     }

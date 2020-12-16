@@ -15,12 +15,12 @@ namespace NewsFeed.Factories
 
         public override Request CreateRequest()
         {
-            return new GoogleRequest(new EverythingRequest()
+            return new GoogleRequest(new TopHeadlinesRequest
             {
                 Q = _configuration.Q,
-                SortBy = _configuration.SortBy,
+                Category = _configuration.Category,
                 Language = _configuration.Language,
-                From = _configuration.From
+                Country = _configuration.Country,
             });
         }
     }

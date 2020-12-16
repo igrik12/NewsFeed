@@ -22,7 +22,7 @@ namespace NewsFeed.Actors
             Receive<CreateService>(service =>
             {
                 var requestType = service.Request.GetType();
-                var actor = Context.ActorOf(Props.Create(() => (ReceiveActor)Activator.CreateInstance(typeof(NewsServiceActor<>).MakeGenericType(requestType), _client)), service.Request.EverythingRequest.Q);
+                var actor = Context.ActorOf(Props.Create(() => (ReceiveActor)Activator.CreateInstance(typeof(NewsServiceActor<>).MakeGenericType(requestType), _client)), service.Request.TopHeadlinesRequest.Q);
                 actor?.Tell(service.Request);
                 _signalRActor?.Tell(new SendNewsServiceActor(actor), Self);
             });

@@ -47,8 +47,8 @@ namespace NewsFeed.Classes
                 {
                     Q = "Google",
                     Language = Languages.EN,
-                    SortBy = SortBys.Popularity,
-                    From = DateTime.Today
+                    Country = Countries.GB,
+                    Category = Categories.Technology
                 }).CreateRequest()
             };
         }
